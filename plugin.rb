@@ -9,7 +9,7 @@ class OpenamCurrentUserProvider < Auth::CurrentUserProvider
 
   def current_user
     return @env[CURRENT_USER_KEY] if @env.key?(CURRENT_USER_KEY)
-    @env[CURRENT_USER_KEY] = User.find_by(email: @env['HTTP_X_FORWARDED_USER'])
+    @env[CURRENT_USER_KEY] = User.find_by(username: @env['HTTP_X_FORWARDED_USER'])
   end
 
   # log on a user and set cookies and session etc.
