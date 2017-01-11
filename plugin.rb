@@ -38,6 +38,10 @@ class OpenamCurrentUserProvider < Auth::CurrentUserProvider
     false
   end
 
+  def is_user_api?
+    false
+  end
+
   # we may need to know very early on in the middleware if an auth token
   # exists, to optimise caching
   def has_auth_cookie?
