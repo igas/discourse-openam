@@ -1,9 +1,15 @@
 # frozen_string_literal: true
 
+# name: discourse-openam
+# about: ForgeRock AM SSO integration
+# version: 0.1
+# authors: Igor Kapkov (igas), Robert Krzysztoforski (brissenden)
+# url: https://github.com/jnsolutions/discourse-openam
+
 after_initialize do
   class OpenamCurrentUserProvider < Auth::CurrentUserProvider
-    CURRENT_USER_KEY ||= "_OPENAM_CURRENT_USER".freeze
-    TOKEN_COOKIE ||= "_oam_t".freeze
+    CURRENT_USER_KEY ||= '_OPENAM_CURRENT_USER'
+    TOKEN_COOKIE ||= '_oam_t'
 
     def initialize(env)
       @env = env
@@ -12,11 +18,12 @@ after_initialize do
 
     def current_user
       return @env[CURRENT_USER_KEY] if @env.key?(CURRENT_USER_KEY)
+
       @env[CURRENT_USER_KEY] = User.find_by(username: @env['HTTP_X_FORWARDED_USER'])
     end
 
     # Log on a user and set cookies and session etc.
-    def log_on_user(user, session, cookies)
+    def log_on_user(user, _session, cookies)
       unless user.auth_token && user.auth_token.length == 32
         user.auth_token = SecureRandom.hex(16)
         user.save!
@@ -27,10 +34,10 @@ after_initialize do
     end
 
     def make_developer_admin(user)
-      if  user.active? &&
-          !user.admin &&
-          Rails.configuration.respond_to?(:developer_emails) &&
-          Rails.configuration.developer_emails.include?(user.email)
+      if user.active? &&
+         !user.admin &&
+         Rails.configuration.respond_to?(:developer_emails) &&
+         Rails.configuration.developer_emails.include?(user.email)
         user.admin = true
         user.save
       end
@@ -56,6 +63,6 @@ after_initialize do
       false
     end
   end
-  
+
   Discourse.current_user_provider = OpenamCurrentUserProvider
 end
